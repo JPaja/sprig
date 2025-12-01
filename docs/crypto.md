@@ -51,7 +51,7 @@ bcrypt "myPassword"
 
 The `argon2id` function takes a `password`, a `time`, a `memory`, a `parallelism`, a `saltLen`, and a `hashLen` and generates a `argon2id' hash.
 Default values follows second reccomended values by [RFC 9106](https://datatracker.ietf.org/doc/rfc9106/) (t=3 and 64 MiB memory) as a default setting for memory-constrained environments, parallelism is 1 saltLen is 16 and hashLen is 32.
-Argon2 is the winner of [Password Hashing Competition](https://www.password-hashing.net/) 2015 and is current reccomended hashing alghoritm for passwords.
+Argon2 is the winner of [Password Hashing Competition](https://www.password-hashing.net/) 2015 and is current recommended hashing algorithm for passwords.
 
 ```
 argon2id "myPassword" [time [memory [parallelism [saltLen [hashLen]]]]]
