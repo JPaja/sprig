@@ -125,7 +125,7 @@ func TestArgon2idParameters(t *testing.T) {
 		return
 	}
 
-	defaultParam := Argon2idParameters{
+	param := Argon2idParameters{
 		Password:    "testPassword",
 		Time:        3,
 		Memory:      64 * 1024,
@@ -134,8 +134,28 @@ func TestArgon2idParameters(t *testing.T) {
 		HashLen:     32,
 	}
 
-	if err := argon2idVerify(hash, defaultParam); err != nil {
-		t.Errorf("Generated hash %s for password %s is not valid: %s", hash, defaultParam.Password, err)
+	if err := argon2idVerify(hash, param); err != nil {
+		t.Errorf("Generated hash %s for password %s is not valid: %s", hash, param.Password, err)
+		return
+	}
+
+	hash2, err := runRaw(`{{argon2id "myPassword" 1 2097152 4}}`, nil)
+	if err != nil {
+		t.Errorf("failed to render template: %s", err)
+		return
+	}
+
+	param2 := Argon2idParameters{
+		Password:    "myPassword",
+		Time:        1,
+		Memory:      2097152,
+		Parallelism: 4,
+		SaltLen:     16,
+		HashLen:     32,
+	}
+
+	if err := argon2idVerify(hash2, param2); err != nil {
+		t.Errorf("Generated hash %s for password %s is not valid: %s", hash2, param2.Password, err)
 	}
 }
 
