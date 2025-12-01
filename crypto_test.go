@@ -71,7 +71,7 @@ type Argon2idParameters struct {
 	Password    string
 	Time        uint32
 	Memory      uint32
-	Parallelism uint8
+	Parallelism uint32
 	SaltLen     uint32
 	HashLen     uint32
 }
@@ -114,9 +114,28 @@ func TestArgon2idParameters(t *testing.T) {
 			continue
 		}
 
-		if argon2idVerify(hash, param) != nil {
+		if err := argon2idVerify(hash, param); err != nil {
 			t.Errorf("Test %d: Generated hash %s for password %s is not valid: %s", i, hash, param.Password, err)
 		}
+	}
+
+	hash, err := runRaw(`{{argon2id "testPassword"}}`, nil)
+	if err != nil {
+		t.Errorf("failed to render template: %s", err)
+		return
+	}
+
+	defaultParam := Argon2idParameters{
+		Password:    "testPassword",
+		Time:        3,
+		Memory:      64 * 1024,
+		Parallelism: 1,
+		SaltLen:     16,
+		HashLen:     32,
+	}
+
+	if err := argon2idVerify(hash, defaultParam); err != nil {
+		t.Errorf("Generated hash %s for password %s is not valid: %s", hash, defaultParam.Password, err)
 	}
 }
 
@@ -175,7 +194,7 @@ func argon2idVerify(encodedHash string, param Argon2idParameters) error {
 	if paramMemory == 0 {
 		paramMemory = 64 * 1024
 	}
-	paramParallelism := param.Parallelism
+	paramParallelism := uint8(param.Parallelism)
 	if paramParallelism == 0 {
 		paramParallelism = 1
 	}

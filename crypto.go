@@ -67,25 +67,31 @@ func bcrypt(input string) string {
 	return string(hash)
 }
 
-func argon2id(input string, time uint32, memory uint32, parallelism uint8, saltLen uint32, hashLen uint32) string {
+func argon2id(input string, params ...uint32) string {
 	// RFC 9106
 	// SECOND RECOMMENDED option and is suggested as a default setting for memory-constrained environments.
 	//
-	if time == 0 {
-		time = 3
-	}
-	if memory == 0 {
-		memory = 64 * 1024
-	}
-	if parallelism == 0 {
-		parallelism = 1
-	}
-	if saltLen == 0 {
-		saltLen = 16
-	}
-	if hashLen == 0 {
-		hashLen = 32
-	}
+    time := uint32(3)
+    memory := uint32(64 * 1024)
+    parallelism := uint8(1)
+    saltLen := uint32(16)
+    hashLen := uint32(32)
+
+    if len(params) > 0 && params[0] != 0 {
+        time = params[0]
+    }
+    if len(params) > 1 && params[1] != 0 {
+        memory = params[1]
+    }
+    if len(params) > 2 && params[2] != 0 {
+        parallelism = uint8(params[2])
+    }
+    if len(params) > 3 && params[3] != 0 {
+        saltLen = params[3]
+    }
+    if len(params) > 4 && params[4] != 0 {
+        hashLen = params[4]
+    }
 
 	salt := make([]byte, saltLen)
 	if _, err := rand.Read(salt); err != nil {
